@@ -1,0 +1,78 @@
+/*
+First time? Check out the tutorial game:
+https://sprig.hackclub.com/gallery/getting_started
+
+@title: MathRacer
+@author: spageektti 
+@tags: []
+@addedOn: 2024-00-00
+*/
+
+const player = "p"
+const road = "r"
+
+setLegend(
+  [ player, bitmap`
+2000000000000000
+2000044664400000
+2000444444440000
+000LD4DDDD4DL000
+200L44444444L000
+200L41111114L000
+2004111111114000
+0000444444440000
+200014DDDD410000
+2000144444410000
+200044DDDD440000
+000L14444441L000
+200L14DDDD41L000
+200LD444444DL000
+2000D33DD33D0000
+0000000000000000` ],
+  [ road, bitmap`
+2000000000000000
+2000000000000000
+2000000000000000
+0000000000000000
+2000000000000000
+2000000000000000
+2000000000000000
+0000000000000000
+2000000000000000
+2000000000000000
+2000000000000000
+0000000000000000
+2000000000000000
+2000000000000000
+2000000000000000
+0000000000000000`],
+)
+
+setSolids([])
+
+let level = 0
+const levels = [
+  map`
+rrrrrr
+rrrrrr
+rrrrrr
+rrrrrr
+rrrrrr
+rrrrrr
+rrrrrr
+rrprrr`
+]
+
+setMap(levels[level])
+
+setPushables({
+  [ player ]: []
+})
+
+onInput("s", () => {
+  getFirst(player).y += 1
+})
+
+afterInput(() => {
+  
+})
