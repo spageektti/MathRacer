@@ -118,13 +118,18 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function generateGems() {
+
+}
+
 // need to be in function to work
 async function move() {
   for (j = 0; j < 10; j++) {
     for (let i = 7; i >= 0; i--) { // the "i" need to be 7 to make a little break
       await sleep(500);
-      getFirst(player).y = i;
+      // TODO: move `a`s and `b`s instead of player
     }
+    generateGems();
   }
 }
 
