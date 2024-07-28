@@ -12,6 +12,10 @@ const player = "p"
 const road = "r"
 const a = "a"
 const b = "b"
+let a_count = 0;
+let b_count = 0;
+let text = "";
+let sum = 0;
 
 setLegend(
   [player, bitmap`
@@ -84,7 +88,7 @@ setLegend(
 ................`],
 )
 
-setSolids([])
+setSolids([player, ])
 
 let level = 0
 const levels = [
@@ -117,16 +121,24 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function random_x() {
+  return Math.floor(Math.random() * 8);
+}
+
+function random_y() {
+  return Math.floor(Math.random() * 8);
+}
+
 function random() {
-  return Math.floor(Math.random() * 9);
+  return Math.floor(Math.random() * 16);
 }
 
 function generateGem(type) {
   let x, y;
   let positionValid = false;
   while (!positionValid) {
-    x = random();
-    y = random();
+    x = random_x();
+    y = random_y();
     positionValid = !getTile(x, y).length; // Ensure the tile is empty
   }
   addSprite(x, y, type);
@@ -141,21 +153,62 @@ function generateGems() {
   }
 }
 
+sum = random();
+
+function updateText() {
+  clearText()
+  addText((a_count - b_count === sum) ? `${a_count}B - ${b_count}G = ${sum}` : `${a_count}B - ${b_count}G != ${sum}`, {
+    x: 4,
+    y: 1,
+    color: (a_count - b_count === sum) ? color`D` : color`3`
+  });
+}
+
+let time = 61;
+
 async function game() {
-  for (let i = 0; i < 10; i++) {
+  while (time > 0 || a_count != b_count) {
     generateGems();
     for (let j = 7; j >= 0; j--) {
+      time--;
+      updateText()
       await sleep(250);
       for (let k = 0; k < getAll(a).length; k++) {
-        getAll(a)[k].y += 1;
-        if (getAll(a)[k].y >= 8) { // Remove gems off-screen
+        if (getAll(a)[k].y == getFirst(player).y && getAll(a)[k].x == getFirst(player).x) {
           getAll(a)[k].remove();
+          a_count++;
+          updateText()
+          continue;
+        }
+        if (getAll(a)[k].y == 8) { // Remove gems off-screen
+          getAll(a)[k].remove();
+          continue;
+        }
+        getAll(a)[k].y += 1;
+        if (getAll(a)[k].y == getFirst(player).y && getAll(a)[k].x == getFirst(player).x) {
+          getAll(a)[k].remove();
+          a_count++;
+          updateText()
+          continue;
         }
       }
       for (let k = 0; k < getAll(b).length; k++) {
-        getAll(b)[k].y += 1;
+        if (getAll(b)[k].y == getFirst(player).y && getAll(b)[k].x == getFirst(player).x) {
+          getAll(b)[k].remove();
+          b_count++;
+          updateText()
+          continue;
+        }
         if (getAll(b)[k].y == 8) { // Remove gems off-screen
           getAll(b)[k].remove();
+          continue;
+        }
+        getAll(b)[k].y += 1;
+        if (getAll(b)[k].y == getFirst(player).y && getAll(b)[k].x == getFirst(player).x) {
+          getAll(b)[k].remove();
+          b_count++;
+          updateText()
+          continue;
         }
       }
       await sleep(250);
