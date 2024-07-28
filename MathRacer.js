@@ -16,6 +16,8 @@ let a_count = 0;
 let b_count = 0;
 let text = "";
 let sum = 0;
+let lvl = 0;
+let time = 61;
 
 setLegend(
   [player, bitmap`
@@ -122,11 +124,11 @@ function sleep(ms) {
 }
 
 function random_x() {
-  return Math.floor(Math.random() * 8);
+  return Math.floor(Math.random() * 9);
 }
 
 function random_y() {
-  return Math.floor(Math.random() * 8);
+  return Math.floor(Math.random() * 5);
 }
 
 function random() {
@@ -157,20 +159,50 @@ sum = random();
 
 function updateText() {
   clearText()
-  addText((a_count - b_count === sum) ? `${a_count}B - ${b_count}G = ${sum}` : `${a_count}B - ${b_count}G != ${sum}`, {
-    x: 4,
+  if (lvl == 0) {
+    addText((a_count - b_count === sum) ? `${a_count}B - ${b_count}G = ${sum}` : `${a_count}B - ${b_count}G != ${sum}`, {
+      x: 4,
+      y: 1,
+      color: (a_count - b_count === sum) ? color`D` : color`3`
+    });
+  }
+  if (lvl == 1) {
+    addText((b_count - a_count === sum) ? `${b_count}G - ${a_count}B = ${sum}` : `${b_count}G - ${a_count}B != ${sum}`, {
+      x: 4,
+      y: 1,
+      color: (b_count - a_count === sum) ? color`D` : color`3`
+    });
+  }
+  addText(`${time}`, {
+    x: 1,
     y: 1,
-    color: (a_count - b_count === sum) ? color`D` : color`3`
+    color: (time > 10) ? color`D` : color`3`
   });
+
 }
 
-let time = 61;
+function hasWon() {
+  if (lvl == 0) {
+    return a_count - b_count === sum;
+  }
+
+  if (lvl == 1) {
+    return b_count - a_count === sum;
+  }
+}
+
+
 
 async function game() {
-  while (time > 0 || a_count != b_count) {
+  while (time > 0 || ((lvl == 0 && a_count - b_count != sum) || (lvl == 1 && b_count - a_count != sum))) {
     generateGems();
     for (let j = 7; j >= 0; j--) {
-      time--;
+      if (time <= 0 && hasWon()) {
+        break;
+      }
+      if (time > 0) {
+        time--;
+      }
       updateText()
       await sleep(250);
       for (let k = 0; k < getAll(a).length; k++) {
@@ -212,8 +244,21 @@ async function game() {
         }
       }
       await sleep(250);
+      if (time < 10 && time >= 0) {
+        playTune(tune`
+500,
+500: C4~500,
+15000`);
+      }
+
     }
   }
+  lvl++;
+  lvl = lvl % 2;
+  time = 61;
+  a_count = 0;
+  b_count = 0;
+  game();
 }
 
 game();
