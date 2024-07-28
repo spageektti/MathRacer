@@ -96,7 +96,8 @@ const levels = [
 .........
 .........
 .........
-....p....`
+....p....
+.........`
 ]
 
 setMap(levels[level])
@@ -110,27 +111,56 @@ onInput("d", () => {
   getFirst(player).x += 1
 })
 
-afterInput(() => {
-
-})
+afterInput(() => {})
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function generateGems() {
-
+function random() {
+  return Math.floor(Math.random() * 9);
 }
 
-// need to be in function to work
-async function move() {
-  for (j = 0; j < 10; j++) {
-    for (let i = 7; i >= 0; i--) { // the "i" need to be 7 to make a little break
-      await sleep(500);
-      // TODO: move `a`s and `b`s instead of player
-    }
-    generateGems();
+function generateGem(type) {
+  let x, y;
+  let positionValid = false;
+  while (!positionValid) {
+    x = random();
+    y = random();
+    positionValid = !getTile(x, y).length; // Ensure the tile is empty
+  }
+  addSprite(x, y, type);
+}
+
+function generateGems() {
+  for (let i = 0; i < 5; i++) {
+    generateGem(a);
+  }
+  for (let i = 0; i < 5; i++) {
+    generateGem(b);
   }
 }
 
-move();
+async function game() {
+  for (let i = 0; i < 10; i++) {
+    generateGems();
+    for (let j = 7; j >= 0; j--) {
+      await sleep(250);
+      for (let k = 0; k < getAll(a).length; k++) {
+        getAll(a)[k].y += 1;
+        if (getAll(a)[k].y >= 8) { // Remove gems off-screen
+          getAll(a)[k].remove();
+        }
+      }
+      for (let k = 0; k < getAll(b).length; k++) {
+        getAll(b)[k].y += 1;
+        if (getAll(b)[k].y == 8) { // Remove gems off-screen
+          getAll(b)[k].remove();
+        }
+      }
+      await sleep(250);
+    }
+  }
+}
+
+game();
