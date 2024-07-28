@@ -13,22 +13,22 @@ const road = "r"
 
 setLegend(
   [player, bitmap`
-2000000000000000
-2000044664400000
-2000444444440000
-000LD4DDDD4DL000
-000L44444444L002
-000L41111114L002
-0004111111114002
-0000444444440000
-200014DDDD410000
-2000144444410000
-200044DDDD440000
-000L14444441L000
-000L14DDDD41L002
-000LD444444DL002
-0000D33DD33D0002
-0000000000000000`],
+................
+.....446644.....
+....44444444....
+...LD4DDDD4DL...
+...L44444444L...
+...L41111114L...
+...4111111114...
+....44444444....
+....14DDDD41....
+....14444441....
+....44DDDD44....
+...L14444441L...
+...L14DDDD41L...
+...LD444444DL...
+....D33DD33D....
+................`],
   [road, bitmap`
 2000000000000000
 2000000000000000
@@ -53,26 +53,43 @@ setSolids([])
 let level = 0
 const levels = [
   map`
-rrrrrrrrr
-rrrrrrrrr
-rrrrrrrrr
-rrrrrrrrr
-rrrrrrrrr
-rrrrrrrrr
-rrrrrrrrr
-rrrrprrrr`
+.........
+.........
+.........
+.........
+.........
+.........
+.........
+....p....`
 ]
 
 setMap(levels[level])
+setBackground(road)
 
-setPushables({
-  [player]: []
+onInput("a", () => {
+  getFirst(player).x -= 1
 })
 
-onInput("s", () => {
-  getFirst(player).y += 1
+onInput("d", () => {
+  getFirst(player).x += 1
 })
 
 afterInput(() => {
 
 })
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// need to be in function to work
+async function move() {
+  for (j = 0; j < 10; j++) {
+    for (let i = 7; i >= 0; i--) { // the "i" need to be 7 to make a little break
+      await sleep(500);
+      getFirst(player).y = i;
+    }
+  }
+}
+
+move();
