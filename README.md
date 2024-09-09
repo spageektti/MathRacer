@@ -1,5 +1,7 @@
 # Math Racer
 
+[Link to sprig editor](https://sprig.hackclub.com/~/qVGfNsYd4IFafgeEpNaH)
+
 Move your car using the `A` and `D` keys.
 Collect green or blue gems in the way that the equation is correct.
 
